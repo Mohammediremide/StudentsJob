@@ -93,5 +93,23 @@
             Note: Payment is in demo. Do not pay.
             </span>
         </div>
+        <script>
+    // Handle payment form submission
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Simple validation (for demonstration)
+        document.getElementById('paymentForm').reset();
+
+        // Add payment notification to localStorage
+        let notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+        notifications.unshift({
+            id: Date.now(),
+            message: "Payment of $9 for Premium was successful.",
+            time: new Date().toLocaleString(),
+            read: false
+        });
+        localStorage.setItem('notifications', JSON.stringify(notifications));
+    });
+</script>
     </body>
 </html>
