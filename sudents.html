@@ -655,21 +655,12 @@
     </div>
 
     <script>
-        // Notification with localStorage persistence
-        function getNotifications() {
-            return JSON.parse(localStorage.getItem('notifications') || '[]');
-        }
-        function setNotifications(notifs) {
-            localStorage.setItem('notifications', JSON.stringify(notifs));
-        }
+        
+        
 
         let notifications = getNotifications();
         if (!notifications.length) {
-            // notifications = [
-            //     { id: 1, message: "Welcome to Brexbin! 🎉", time: "Just now", read: false },
-            //     { id: 2, message: "New job posted: Math Tutor", time: "2 hours ago", read: false },
-            //     { id: 3, message: "Your profile was updated successfully.", time: "Yesterday", read: true }
-            // ];
+            
             setNotifications(notifications);
         }
 
@@ -723,7 +714,7 @@
     notifications.unshift({
         id: Date.now(),
         message,
-        time: new Date().toLocaleString(), // Save the real date/time
+        time: new Date().toLocaleString(), 
         read: false
     });
     setNotifications(notifications);
@@ -735,7 +726,7 @@
             updateNotificationDot();
         });
         document.addEventListener('DOMContentLoaded', function() {
-    // ...existing code...
+    
     notifyTodayEvents();
 });
 
@@ -768,7 +759,7 @@
             document.getElementById('profileBioDisplay').textContent = user.bio || 'No bio yet.';
             document.getElementById('profileLikesDisplay').textContent = user.likes && user.likes.length ? user.likes.join(', ') : 'None listed.';
             document.getElementById('profileEmailDisplay').textContent = user.email;
-            // Update profile content
+            
             const profileContent = document.getElementById('profileContent');
             if (!profileContent) {
                 console.error('Profile content element not found');
@@ -813,6 +804,27 @@
             document.getElementById('editProfileModal').classList.remove('hidden');
             document.getElementById('editProfileModal').classList.add('flex');
         }
+       
+function getCurrentUserEmail() {
+    const user = getCurrentUser();
+    return user ? user.email : null;
+    
+    
+}
+
+
+function getNotifications() {
+    const email = getCurrentUserEmail();
+    if (!email) return [];
+    return JSON.parse(localStorage.getItem('notifications_' + email) || '[]');
+}
+
+// Set notifications for the current user
+function setNotifications(notifs) {
+    const email = getCurrentUserEmail();
+    if (!email) return;
+    localStorage.setItem('notifications_' + email, JSON.stringify(notifs));
+}
 
         function saveProfile(event) {
             event.preventDefault();
@@ -841,6 +853,7 @@
             localStorage.removeItem('currentUser');
             showSection('login');
         }
+        
 
         function signup(event) {
             event.preventDefault();
@@ -895,7 +908,7 @@
         
 
         // --- Job Board  ---
-        let deafaultJobs = [
+        let deafaulJobs = [
           
         // USA jobs from Google search (examples)
         {
@@ -1452,7 +1465,7 @@ if (localStorage.getItem('jobs')) {
 
 
 
-        // ...existing code...
+        
 
 function postJob(event) {
     event.preventDefault();
@@ -1482,13 +1495,10 @@ function postJob(event) {
   
 
 
-// When loading/reloading, get jobs from localStorage if available
-
-// ...existing code...
        
         function getPostedLabel(dateString) {
     const postedDate = new Date(dateString);
-    // Always show full date and time
+    
     return postedDate.toLocaleString(undefined, { 
         weekday: 'long', year: 'numeric', month: 'short', day: 'numeric',
         hour: '2-digit', minute: '2-digit'
