@@ -895,7 +895,7 @@
         
 
         // --- Job Board  ---
-        let jobs = [
+        let deafaultJobs = [
           
         // USA jobs from Google search (examples)
         {
@@ -1253,6 +1253,13 @@
             
         ];
 
+let jobs = [];
+if (localStorage.getItem('jobs')) {
+    jobs = JSON.parse(localStorage.getItem('jobs'));
+} else {
+    jobs = defaultJobs;
+    localStorage.setItem('jobs', JSON.stringify(jobs));
+}
 
         /**
          * Calculator for hours and money per hour
