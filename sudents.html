@@ -215,18 +215,32 @@
                 `).join('');
         }
 
+
         function addCalendarEvent(e) {
-            e.preventDefault();
-            const date = document.getElementById('eventDate').value;
-            const title = document.getElementById('eventTitle').value.trim();
-            if (!date || !title) return;
-            const events = getCalendarEvents();
-            events.push({ date, title });
-            setCalendarEvents(events);
-            document.getElementById('eventForm').reset();
-            renderCalendar();
-            showDayEvents(date);
+    e.preventDefault();
+    const date = document.getElementById('eventDate').value;
+    const title = document.getElementById('eventTitle').value.trim();
+    if (!date || !title) return;
+    const events = getCalendarEvents();
+    events.push({ date, title });
+    setCalendarEvents(events);
+    addNotification(`Calendar event set for ${date}: "${title}"`); // <-- Add this line
+    document.getElementById('eventForm').reset();
+    renderCalendar();
+    showDayEvents(date);
+}
+        function notifyTodayEvents() {
+    const today = new Date().toISOString().split('T')[0];
+    const events = getCalendarEvents();
+    let notified = JSON.parse(localStorage.getItem('calendarNotified') || '[]');
+    events.forEach(ev => {
+        if (ev.date === today && !notified.includes(ev.date + ev.title)) {
+            addNotification(`Today is your calendar event: "${ev.title}"`);
+            notified.push(ev.date + ev.title);
         }
+    });
+    localStorage.setItem('calendarNotified', JSON.stringify(notified));
+}
 
         function deleteCalendarEvent(dateStr, idx) {
             let events = getCalendarEvents();
@@ -720,6 +734,10 @@
             notifications = getNotifications();
             updateNotificationDot();
         });
+        document.addEventListener('DOMContentLoaded', function() {
+    // ...existing code...
+    notifyTodayEvents();
+});
 
         // --- User/Profile Logic ---
         function getUsers() {
@@ -873,6 +891,7 @@
             }
             updateNotificationDot();
         });
+
         
 
         // --- Job Board  ---
@@ -1471,6 +1490,7 @@ function postJob(event) {
         return postedDate.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
     }
 }
+
         
 
         showSection('home');
