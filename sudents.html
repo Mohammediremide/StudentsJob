@@ -22,31 +22,47 @@
 <body class="bg-gray-50 min-h-screen">
     <!-- Navigation -->
     <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <h1 class="text-2xl font-bold text-primary">Brexbin</h1>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button onclick="showSection('home')" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Home</button>
-                    <button class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
-                        <a href="payment.html">Payment</a>
-                    </button>
-                    <button onclick="showSection('jobs')" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Browse Jobs</button>
-                    <button onclick="showSection('post')" class="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-secondary">Post a Job</button>
-                    <button onclick="showProfile()" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Profile</button>
-                    <button onclick="toggleNotifications()" class="relative text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM19 12H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v5a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span id="notificationDot" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
-                    </button>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <h1 class="text-2xl font-bold text-primary">Brexbin</h1>
                 </div>
             </div>
+            <div class="flex items-center space-x-4">
+                <button id="navHomeBtn" onclick="showSection('home')" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Home</button>
+                <button id="navPaymentBtn" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+    <a href="payment.html">Payment</a>
+</button>
+                <button id="navJobsBtn" onclick="showSection('jobs')" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Browse Jobs</button>
+                <button id="navPostBtn" onclick="showSection('post')" class="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-secondary">Post a Job</button>
+                <button id="navProfileBtn" onclick="showProfile()" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Profile</button>
+
+                <button id="navNotificationBtn" onclick="toggleNotifications()" class="relative text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM19 12H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v5a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span id="notificationDot" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                </button>
+                
+            </div>
         </div>
-    </nav>
+    </div>
+</nav>
+    <!-- Admin Dashboard -->
+<div id="adminDashboard" class="section hidden">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <h2 class="text-3xl font-bold text-primary mb-6">Admin Dashboard</h2>
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold mb-2">All Users</h3>
+            <ul id="adminUserList" class="mb-6 bg-white rounded shadow p-4"></ul>
+        </div>
+        <div>
+            <h3 class="text-xl font-semibold mb-2">All Jobs</h3>
+            <ul id="adminJobList" class="bg-white rounded shadow p-4"></ul>
+        </div>
+    </div>
+</div>
 
     <!-- Notification Panel -->
     <div id="notificationPanel" class="fixed top-16 right-4 w-80 bg-white rounded-xl shadow-2xl border border-primary/20 z-50 hidden transition-all">
@@ -216,31 +232,21 @@
         }
 
 
-        function addCalendarEvent(e) {
-    e.preventDefault();
-    const date = document.getElementById('eventDate').value;
-    const title = document.getElementById('eventTitle').value.trim();
-    if (!date || !title) return;
-    const events = getCalendarEvents();
-    events.push({ date, title });
-    setCalendarEvents(events);
-    addNotification(`Calendar event set for ${date}: "${title}"`); // <-- Add this line
-    document.getElementById('eventForm').reset();
-    renderCalendar();
-    showDayEvents(date);
-}
-        function notifyTodayEvents() {
-    const today = new Date().toISOString().split('T')[0];
-    const events = getCalendarEvents();
-    let notified = JSON.parse(localStorage.getItem('calendarNotified') || '[]');
-    events.forEach(ev => {
-        if (ev.date === today && !notified.includes(ev.date + ev.title)) {
-            addNotification(`Today is your calendar event: "${ev.title}"`);
-            notified.push(ev.date + ev.title);
-        }
-    });
-    localStorage.setItem('calendarNotified', JSON.stringify(notified));
-}
+       (function addCalendarNav() {
+    const nav = document.querySelector('nav .flex.items-center.space-x-4');
+    if (nav && !document.getElementById('calendarNavBtn')) {
+        const btn = document.createElement('button');
+        btn.id = "calendarNavBtn"; 
+        btn.className = "text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium";
+        btn.textContent = "Calendar";
+        btn.onclick = function() {
+            showSection('calendar');
+            renderCalendar();
+            document.getElementById('eventList').innerHTML = '';
+        };
+        nav.insertBefore(btn, nav.children[1]);
+    }
+})();
 
         function deleteCalendarEvent(dateStr, idx) {
             let events = getCalendarEvents();
@@ -275,22 +281,65 @@
 
         // Add Calendar to Navigation
         (function addCalendarNav() {
-            const nav = document.querySelector('nav .flex.items-center.space-x-4');
-            if (nav && !document.getElementById('calendarNavBtn')) {
-                const btn = document.createElement('button');
-                btn.id = "calendarNavBtn";
-                btn.className = "text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium";
-                btn.textContent = "Calendar";
-                btn.onclick = function() {
-                    showSection('calendar');
-                    renderCalendar();
-                    document.getElementById('eventList').innerHTML = '';
-                };
-                nav.insertBefore(btn, nav.children[1]);
-            }
-        })();
+    const nav = document.querySelector('nav .flex.items-center.space-x-4');
+    if (nav && !document.getElementById('calendarNavBtn')) {
+        const btn = document.createElement('button');
+        btn.id = "calendarNavBtn";
+        btn.className = "text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium";
+        btn.textContent = "Calendar";
+        btn.onclick = function() {
+            showSection('calendar');
+            renderCalendar();
+            document.getElementById('eventList').innerHTML = '';
+        };
+        nav.insertBefore(btn, nav.children[1]);
+        updateNavVisibility(); 
+    }
+})();
+function addCalendarEvent(event) {
+    event.preventDefault();
+    const date = document.getElementById('eventDate').value;
+    const title = document.getElementById('eventTitle').value.trim();
+    if (!date || !title) return;
+    const events = getCalendarEvents();
+    events.push({ date, title });
+    setCalendarEvents(events);
+    renderCalendar();
+    showDayEvents(date);
+    document.getElementById('eventForm').reset();
+    addNotification(`Calendar reminder set for ${date}: ${title}`);
+}
 
-        // Attach month navigation after DOM loaded
+(function addCalculatorNav() {
+    const nav = document.querySelector('nav .flex.items-center.space-x-4');
+    if (nav && !document.getElementById('calculatorNavBtn')) {
+        const btn = document.createElement('button');
+        btn.id = "calculatorNavBtn";
+        btn.className = "text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium";
+        btn.textContent = "Earnings Calculator";
+        btn.onclick = function() {
+            openCalculatorModal();
+        };
+        nav.appendChild(btn);
+        updateNavVisibility(); 
+    }
+})();
+
+document.addEventListener('DOMContentLoaded', function() {
+    const nav = document.querySelector('nav .flex.items-center.space-x-4');
+    if (nav && !document.getElementById('adminNavBtn')) {
+        const btn = document.createElement('button');
+        btn.id = "adminNavBtn";
+        btn.className = "text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium";
+        btn.textContent = "Admin";
+        btn.onclick = function() {
+            showSection('adminDashboard');
+            renderAdminDashboard();
+        };
+        nav.appendChild(btn);
+        updateNavVisibility(); 
+    }
+});    // Attach month navigation after DOM loaded
         window.addEventListener('DOMContentLoaded', () => {
             const prev = document.getElementById('prevMonth');
             const next = document.getElementById('nextMonth');
@@ -572,6 +621,7 @@
             }
         });
     </script>
+    
 
     <!-- Sign Up Page -->
     <div id="signup" class="section hidden">
@@ -1248,8 +1298,10 @@ function setNotifications(notifs) {
                 description: "Take online surveys and earn money from home.",
                 requirements: "Internet access, attention to detail",
                 contact: "support@surveyjunkie.com",
+                
                 posted: new Date().toLocaleString()
             },
+            
             {
                 id: 35,
                 title: "Catering Staff",
@@ -1274,25 +1326,8 @@ if (localStorage.getItem('jobs')) {
     localStorage.setItem('jobs', JSON.stringify(jobs));
 }
 
-        /**
-         * Calculator for hours and money per hour
-         * Shows a modal where user can enter hours and hourly rate, and see total earnings.
-         */
-
-        // Add Calculator button to navigation
-        (function addCalculatorNav() {
-            const nav = document.querySelector('nav .flex.items-center.space-x-4');
-            if (nav && !document.getElementById('calculatorNavBtn')) {
-                const btn = document.createElement('button');
-                btn.id = "calculatorNavBtn";
-                btn.className = "text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium";
-                btn.textContent = "Earnings Calculator";
-                btn.onclick = function() {
-                    openCalculatorModal();
-                };
-                nav.appendChild(btn);
-            }
-        })();
+        
+ 
 
         // Calculator Modal HTML
         (function addCalculatorModal() {
@@ -1484,13 +1519,180 @@ function postJob(event) {
     };
 
     jobs.unshift(newJob);
-    localStorage.setItem('jobs', JSON.stringify(jobs)); // Save to localStorage
+    localStorage.setItem('jobs', JSON.stringify(jobs)); 
 
     alert('Job posted successfully! It will appear in the job listings.');
     event.target.reset();
     showSection('jobs');
     addNotification(`New job posted: ${newJob.title}`);
 }
+// Save application
+function saveApplication(jobId, jobTitle, status) {
+    const email = getCurrentUserEmail();
+    if (!email) return;
+    const key = 'applications_' + email;
+    let apps = JSON.parse(localStorage.getItem(key) || '[]');
+    apps.unshift({
+        jobId,
+        jobTitle,
+        status,
+        date: new Date().toLocaleString()
+    });
+    localStorage.setItem(key, JSON.stringify(apps));
+}
+
+saveApplication(currentJobId, jobTitle, "Pending");
+function saveJob(jobId) {
+    const email = getCurrentUserEmail();
+    if (!email) return;
+    let saved = JSON.parse(localStorage.getItem('savedJobs_' + email) || '[]');
+    if (!saved.includes(jobId)) saved.push(jobId);
+    localStorage.setItem('savedJobs_' + email, JSON.stringify(saved));
+    addNotification("Job saved!");
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const nav = document.querySelector('nav .flex.items-center.space-x-4');
+    if (nav && !document.getElementById('adminNavBtn')) {
+        const btn = document.createElement('button');
+        btn.id = "adminNavBtn";
+        btn.className = "text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium";
+        btn.textContent = "Admin";
+        btn.onclick = function() {
+            showSection('adminDashboard');
+            renderAdminDashboard();
+        };
+        nav.appendChild(btn);
+    }
+});
+function isAdmin() {
+    const user = getCurrentUser();
+    
+    return user && (user.email === "admin@brexbin.com" || user.isAdmin);
+}
+
+// Only show admin nav if admin
+document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('adminNavBtn');
+    if (btn) {
+        if (!isAdmin()) btn.style.display = 'none';
+    }
+});
+
+
+function renderAdminDashboard() {
+    // Users
+    const users = getUsers();
+    const userList = document.getElementById('adminUserList');
+    userList.innerHTML = users.map((u, idx) => `
+        <li class="border-b py-2 flex justify-between items-center">
+            <span>
+                <span class="font-semibold">${u.email}</span>
+                ${u.name ? ` - <span>${u.name}</span>` : ''}
+                ${u.isAdmin ? '<span class="text-xs text-yellow-600 ml-2">(admin)</span>' : ''}
+            </span>
+            <button onclick="deleteUserAsAdmin(${idx})" class="bg-red-500 text-white px-3 py-1 rounded text-xs" ${u.isAdmin ? 'disabled' : ''}>Delete</button>
+        </li>
+    `).join('');
+
+    // Jobs
+    const jobList = document.getElementById('adminJobList');
+    jobList.innerHTML = jobs.map(j => `
+        <li class="border-b py-2 flex justify-between items-center">
+            <span>
+                <strong>${j.title}</strong> at ${j.company} (${j.location})
+            </span>
+            <button onclick="deleteJobAsAdmin(${j.id})" class="bg-red-500 text-white px-3 py-1 rounded text-xs">Delete</button>
+        </li>
+    `).join('');
+}
+function deleteUserAsAdmin(userIdx) {
+    let users = getUsers();
+    const user = users[userIdx];
+    if (!user) return;
+    if (user.isAdmin) {
+        alert("You cannot delete an admin user.");
+        return;
+    }
+    if (!confirm(`Are you sure you want to delete user: ${user.email}?`)) return;
+    users.splice(userIdx, 1);
+    setUsers(users);
+    renderAdminDashboard();
+    addNotification(`User ${user.email} deleted by admin.`);
+}
+
+function deleteJobAsAdmin(jobId) {
+    if (!confirm("Are you sure you want to delete this job?")) return;
+    jobs = jobs.filter(j => j.id !== jobId);
+    localStorage.setItem('jobs', JSON.stringify(jobs));
+    renderAdminDashboard();
+    addNotification("Job deleted by admin.");
+}
+function signup(event) {
+    event.preventDefault();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    let users = getUsers();
+    if (users.find(u => u.email === email)) {
+        alert('Email already registered.');
+        return;
+    }
+    const user = { email, password, name: '', bio: '', likes: [] };
+    // Make a specific email admin
+    if (email === "admin@brexbin.com") user.isAdmin = true;
+    users.push(user);
+    setUsers(users);
+    setCurrentUser(user);
+    alert('Signup successful! Please complete your profile.');
+    showProfile();
+    addNotification("Welcome to Brexbin ! 🎉");
+}
+
+function updateNavVisibility() {
+    const user = getCurrentUser();
+    
+    const navIds = [
+        "navHomeBtn",
+        "navJobsBtn",
+        "navPostBtn",
+        "navProfileBtn",
+        "adminNavBtn",
+        "calendarNavBtn",     
+        "calculatorNavBtn",    
+        "navPaymentBtn"        
+    ];
+    navIds.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.style.display = user ? "" : "none";
+        }
+    });
+}
+function login(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    let users = getUsers();
+    const user = users.find(u => u.email === email && u.password === password);
+    if (!user) {
+        alert('Invalid email or password.');
+        return;
+    }
+    setCurrentUser(user);
+    showProfile();
+    updateNavVisibility(); 
+}
+document.dispatchEvent(new Event('DOMContentLoaded'));
+
+function logoutProfile() {
+    localStorage.removeItem('currentUser');
+    showSection('login');
+    updateNavVisibility(); 
+}
+document.dispatchEvent(new Event('DOMContentLoaded'));
+
+
+
+window.addEventListener('DOMContentLoaded', updateNavVisibility);
 
   
 
