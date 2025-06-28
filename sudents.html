@@ -1550,9 +1550,17 @@ function saveJob(jobId) {
     localStorage.setItem('savedJobs_' + email, JSON.stringify(saved));
     addNotification("Job saved!");
 }
+// Remove any previous adminNavBtn creation code!
+
 document.addEventListener('DOMContentLoaded', function() {
     const nav = document.querySelector('nav .flex.items-center.space-x-4');
-    if (nav && !document.getElementById('adminNavBtn')) {
+    // Remove existing admin button if present
+    const existingBtn = document.getElementById('adminNavBtn');
+    if (existingBtn) existingBtn.remove();
+
+    // Only add if user is admin
+    const user = getCurrentUser();
+    if (nav && user && (user.email === "admin@brexbin.com" || user.isAdmin === true)) {
         const btn = document.createElement('button');
         btn.id = "adminNavBtn";
         btn.className = "text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium";
@@ -1562,21 +1570,14 @@ document.addEventListener('DOMContentLoaded', function() {
             renderAdminDashboard();
         };
         nav.appendChild(btn);
+        updateNavVisibility();
     }
 });
 function isAdmin() {
     const user = getCurrentUser();
     
-    return user && (user.email === "admin@brexbin.com" || user.isAdmin);
+    return user && (user.email === "admin@brexbin.com") || user.isAdmin === true;
 }
-
-// Only show admin nav if admin
-document.addEventListener('DOMContentLoaded', function() {
-    const btn = document.getElementById('adminNavBtn');
-    if (btn) {
-        if (!isAdmin()) btn.style.display = 'none';
-    }
-});
 
 
 function renderAdminDashboard() {
@@ -1679,17 +1680,16 @@ function login(event) {
     }
     setCurrentUser(user);
     showProfile();
-    updateNavVisibility(); 
+    updateNavVisibility();
+    document.dispatchEvent(new Event('DOMContentLoaded')); // Ensures nav/admin button is updated
 }
-document.dispatchEvent(new Event('DOMContentLoaded'));
 
 function logoutProfile() {
     localStorage.removeItem('currentUser');
     showSection('login');
-    updateNavVisibility(); 
+    updateNavVisibility();
+    document.dispatchEvent(new Event('DOMContentLoaded')); // Ensures nav/admin button is updated
 }
-document.dispatchEvent(new Event('DOMContentLoaded'));
-
 
 
 window.addEventListener('DOMContentLoaded', updateNavVisibility);
