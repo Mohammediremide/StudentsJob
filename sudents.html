@@ -941,9 +941,9 @@ function setNotifications(notifs) {
         function showSection(section) {
             document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
             document.getElementById(section).classList.remove('hidden');
-            if (section === 'jobs') displayJobs(jobs);
+            if (section === 'jobs') displayJobs(jobs); // <-- This line is important!
             if (section === 'profile') renderProfile();
-        }
+}
 
         window.addEventListener('DOMContentLoaded', () => {
             notifications = getNotifications();
@@ -959,8 +959,8 @@ function setNotifications(notifs) {
         
 
         // --- Job Board  ---
-        let deafaulJobs = [
-          
+        let defaultJobs = [
+
         // USA jobs from Google search (examples)
         {
             id: 9,
