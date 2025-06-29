@@ -607,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function() {
             addNotification("Your password was changed.");
             setTimeout(closeChangePasswordModal, 1200);
         }
-        // Add button to  section after DOM loaded
+        
         document.addEventListener('DOMContentLoaded', function() {
             const profileSection = document.querySelector('#profile .flex-1 .mt-6.flex');
             if (profileSection && !document.getElementById('changePasswordBtn')) {
@@ -691,6 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <label class="block text-sm font-medium text-gray-700 mb-2">Available Hours (per week)</label>
                         <input type="number" id="availableHours" min="5" max="40" required class="w-full border border-gray-300 rounded-md px-3 py-2">
                     </div>
+                    
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Why are you interested?</label>
                         <textarea id="whyInterested" rows="3" required class="w-full border border-gray-300 rounded-md px-3 py-2"></textarea>
@@ -1481,22 +1482,13 @@ if (localStorage.getItem('jobs')) {
         return;
     }
     const job = jobs.find(j => j.id === currentJobId);
-    const jobTitle = job ? job.title : 'the job';
-    addNotification(`You applied for: ${jobTitle}`);
-    setTimeout(() => {
-        const rejected = Math.random() < 0.5;
-        if (rejected) {
-            addNotification(`Your application for ${jobTitle} was rejected.`);
-            alert('Sorry, your application was not successful this time.');
-        } else {
-            addNotification(`Congratulations! Your application for ${jobTitle} was accepted.`);
-            alert('Your application was submitted successfully!');
-        }
-    }, 1000);
+    const jobTitle = job ? { title: job.title, company: job.company } : { title: 'the job', company: '' };
+    saveApplication(currentJobId, jobTitle, "Pending");
+    addNotification(`You applied for: ${jobTitle.title}`);
+    alert('Your application was submitted! You will be notified within 24 hours.');
     closeModal();
     event.target.reset();
 }
-
 
 
 
@@ -1542,6 +1534,7 @@ function saveApplication(jobId, jobTitle, status) {
 }
 
 saveApplication(currentJobId, jobTitle, "Pending");
+
 function saveJob(jobId) {
     const email = getCurrentUserEmail();
     if (!email) return;
@@ -1550,15 +1543,15 @@ function saveJob(jobId) {
     localStorage.setItem('savedJobs_' + email, JSON.stringify(saved));
     addNotification("Job saved!");
 }
-// Remove any previous adminNavBtn creation code!
+
 
 document.addEventListener('DOMContentLoaded', function() {
     const nav = document.querySelector('nav .flex.items-center.space-x-4');
-    // Remove existing admin button if present
+    
     const existingBtn = document.getElementById('adminNavBtn');
     if (existingBtn) existingBtn.remove();
 
-    // Only add if user is admin
+    
     const user = getCurrentUser();
     if (nav && user && (user.email === "admin@brexbin.com" || user.isAdmin === true)) {
         const btn = document.createElement('button');
@@ -1605,6 +1598,25 @@ function renderAdminDashboard() {
             <button onclick="deleteJobAsAdmin(${j.id})" class="bg-red-500 text-white px-3 py-1 rounded text-xs">Delete</button>
         </li>
     `).join('');
+    userList.innerHTML = users.map((u, idx) => {
+    let activeLabel = '';
+    if (u.lastActive && Date.now() - u.lastActive < 2 * 60 * 1000) {
+        activeLabel = `<span class="ml-2 text-xs text-green-600">(Active now)</span>`;
+    } else if (u.lastActive) {
+        activeLabel = `<span class="ml-2 text-xs text-gray-400">(Last seen: ${new Date(u.lastActive).toLocaleTimeString()})</span>`;
+    }
+    return `
+        <li class="border-b py-2 flex justify-between items-center">
+            <span>
+                <span class="font-semibold">${u.email}</span>
+                ${u.name ? ` - <span>${u.name}</span>` : ''}
+                ${u.isAdmin ? '<span class="text-xs text-yellow-600 ml-2">(admin)</span>' : ''}
+                ${activeLabel}
+            </span>
+            <button onclick="deleteUserAsAdmin(${idx})" class="bg-red-500 text-white px-3 py-1 rounded text-xs" ${u.isAdmin ? 'disabled' : ''}>Delete</button>
+        </li>
+    `;
+}).join('');
 }
 function deleteUserAsAdmin(userIdx) {
     let users = getUsers();
@@ -1638,7 +1650,7 @@ function signup(event) {
         return;
     }
     const user = { email, password, name: '', bio: '', likes: [] };
-    // Make a specific email admin
+    
     if (email === "admin@brexbin.com") user.isAdmin = true;
     users.push(user);
     setUsers(users);
@@ -1681,18 +1693,35 @@ function login(event) {
     setCurrentUser(user);
     showProfile();
     updateNavVisibility();
-    document.dispatchEvent(new Event('DOMContentLoaded')); // Ensures nav/admin button is updated
+    document.dispatchEvent(new Event('DOMContentLoaded')); 
 }
 
 function logoutProfile() {
     localStorage.removeItem('currentUser');
     showSection('login');
     updateNavVisibility();
-    document.dispatchEvent(new Event('DOMContentLoaded')); // Ensures nav/admin button is updated
+    document.dispatchEvent(new Event('DOMContentLoaded')); 
 }
 
 
 window.addEventListener('DOMContentLoaded', updateNavVisibility);
+function setUserActive() {
+    const user = getCurrentUser();
+    if (user) {
+        user.lastActive = Date.now();
+        setCurrentUser(user);
+        
+        let users = getUsers();
+        users = users.map(u => u.email === user.email ? { ...u, lastActive: user.lastActive } : u);
+        setUsers(users);
+    }
+}
+
+
+window.addEventListener('mousemove', setUserActive);
+window.addEventListener('keydown', setUserActive);
+window.addEventListener('click', setUserActive);
+
 
   
 
@@ -1715,3 +1744,4 @@ window.addEventListener('DOMContentLoaded', updateNavVisibility);
 <script src="server.js"></script>
 <script></script>
 </html>
+
