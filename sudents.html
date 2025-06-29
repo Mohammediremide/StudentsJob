@@ -607,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function() {
             addNotification("Your password was changed.");
             setTimeout(closeChangePasswordModal, 1200);
         }
-        
+        // Add button to  section after DOM loaded
         document.addEventListener('DOMContentLoaded', function() {
             const profileSection = document.querySelector('#profile .flex-1 .mt-6.flex');
             if (profileSection && !document.getElementById('changePasswordBtn')) {
@@ -1482,13 +1482,22 @@ if (localStorage.getItem('jobs')) {
         return;
     }
     const job = jobs.find(j => j.id === currentJobId);
-    const jobTitle = job ? { title: job.title, company: job.company } : { title: 'the job', company: '' };
-    saveApplication(currentJobId, jobTitle, "Pending");
-    addNotification(`You applied for: ${jobTitle.title}`);
-    alert('Your application was submitted! You will be notified within 24 hours.');
+    const jobTitle = job ? job.title : 'the job';
+    addNotification(`You applied for: ${jobTitle}`);
+    setTimeout(() => {
+        const rejected = Math.random() < 0.5;
+        if (rejected) {
+            addNotification(`Your application for ${jobTitle} was rejected.`);
+            alert('Sorry, your application was not successful this time.');
+        } else {
+            addNotification(`Congratulations! Your application for ${jobTitle} was accepted.`);
+            alert('Your application was submitted successfully!');
+        }
+    }, 1000);
     closeModal();
     event.target.reset();
 }
+
 
 
 
@@ -1534,7 +1543,6 @@ function saveApplication(jobId, jobTitle, status) {
 }
 
 saveApplication(currentJobId, jobTitle, "Pending");
-
 function saveJob(jobId) {
     const email = getCurrentUserEmail();
     if (!email) return;
