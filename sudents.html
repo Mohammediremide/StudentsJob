@@ -1551,15 +1551,15 @@ function saveJob(jobId) {
     localStorage.setItem('savedJobs_' + email, JSON.stringify(saved));
     addNotification("Job saved!");
 }
-
+// Remove any previous adminNavBtn creation code!
 
 document.addEventListener('DOMContentLoaded', function() {
     const nav = document.querySelector('nav .flex.items-center.space-x-4');
-    
+    // Remove existing admin button if present
     const existingBtn = document.getElementById('adminNavBtn');
     if (existingBtn) existingBtn.remove();
 
-    
+    // Only add if user is admin
     const user = getCurrentUser();
     if (nav && user && (user.email === "admin@brexbin.com" || user.isAdmin === true)) {
         const btn = document.createElement('button');
@@ -1658,7 +1658,7 @@ function signup(event) {
         return;
     }
     const user = { email, password, name: '', bio: '', likes: [] };
-    
+    // Make a specific email admin
     if (email === "admin@brexbin.com") user.isAdmin = true;
     users.push(user);
     setUsers(users);
@@ -1701,34 +1701,43 @@ function login(event) {
     setCurrentUser(user);
     showProfile();
     updateNavVisibility();
-    document.dispatchEvent(new Event('DOMContentLoaded')); 
+    document.dispatchEvent(new Event('DOMContentLoaded')); // Ensures nav/admin button is updated
 }
 
 function logoutProfile() {
     localStorage.removeItem('currentUser');
     showSection('login');
     updateNavVisibility();
-    document.dispatchEvent(new Event('DOMContentLoaded')); 
+    document.dispatchEvent(new Event('DOMContentLoaded')); // Ensures nav/admin button is updated
 }
 
 
 window.addEventListener('DOMContentLoaded', updateNavVisibility);
+
+
+
+
+
+
+// Track user activity and update lastActive timestamp
 function setUserActive() {
     const user = getCurrentUser();
     if (user) {
         user.lastActive = Date.now();
         setCurrentUser(user);
-        
+        // Also update in users array
         let users = getUsers();
         users = users.map(u => u.email === user.email ? { ...u, lastActive: user.lastActive } : u);
         setUsers(users);
     }
 }
 
-
+// Listen for activity events
 window.addEventListener('mousemove', setUserActive);
 window.addEventListener('keydown', setUserActive);
 window.addEventListener('click', setUserActive);
+
+
 
 
   
