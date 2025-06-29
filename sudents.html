@@ -362,7 +362,8 @@ document.addEventListener('DOMContentLoaded', function() {
     <select id="countryFilter" class="border border-gray-300 rounded-md px-3 py-2">
         <option value="">All Countries</option>
         <option value="United States">United States</option>
-        <!-- Add more countries if needed -->
+        
+        
     </select>
     <select id="categoryFilter" class="border border-gray-300 rounded-md px-3 py-2">
         <option value="">All Categories</option>
@@ -607,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function() {
             addNotification("Your password was changed.");
             setTimeout(closeChangePasswordModal, 1200);
         }
-        // Add button to  section after DOM loaded
+        
         document.addEventListener('DOMContentLoaded', function() {
             const profileSection = document.querySelector('#profile .flex-1 .mt-6.flex');
             if (profileSection && !document.getElementById('changePasswordBtn')) {
@@ -870,7 +871,7 @@ function getNotifications() {
     return JSON.parse(localStorage.getItem('notifications_' + email) || '[]');
 }
 
-// Set notifications for the current user
+
 function setNotifications(notifs) {
     const email = getCurrentUserEmail();
     if (!email) return;
@@ -941,7 +942,7 @@ function setNotifications(notifs) {
         function showSection(section) {
             document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
             document.getElementById(section).classList.remove('hidden');
-            if (section === 'jobs') displayJobs(jobs); // <-- This line is important!
+            if (section === 'jobs') displayJobs(jobs); 
             if (section === 'profile') renderProfile();
 }
 
@@ -1493,7 +1494,7 @@ if (localStorage.getItem('jobs')) {
             addNotification(`Congratulations! Your application for ${jobTitle} was accepted.`);
             alert('Your application was submitted successfully!');
         }
-    }, 1000);
+    }, 10000);
     closeModal();
     event.target.reset();
 }
@@ -1551,15 +1552,15 @@ function saveJob(jobId) {
     localStorage.setItem('savedJobs_' + email, JSON.stringify(saved));
     addNotification("Job saved!");
 }
-// Remove any previous adminNavBtn creation code!
+
 
 document.addEventListener('DOMContentLoaded', function() {
     const nav = document.querySelector('nav .flex.items-center.space-x-4');
-    // Remove existing admin button if present
+    
     const existingBtn = document.getElementById('adminNavBtn');
     if (existingBtn) existingBtn.remove();
 
-    // Only add if user is admin
+    
     const user = getCurrentUser();
     if (nav && user && (user.email === "admin@brexbin.com" || user.isAdmin === true)) {
         const btn = document.createElement('button');
@@ -1658,7 +1659,7 @@ function signup(event) {
         return;
     }
     const user = { email, password, name: '', bio: '', likes: [] };
-    // Make a specific email admin
+    
     if (email === "admin@brexbin.com") user.isAdmin = true;
     users.push(user);
     setUsers(users);
@@ -1701,14 +1702,14 @@ function login(event) {
     setCurrentUser(user);
     showProfile();
     updateNavVisibility();
-    document.dispatchEvent(new Event('DOMContentLoaded')); // Ensures nav/admin button is updated
+    document.dispatchEvent(new Event('DOMContentLoaded')); 
 }
 
 function logoutProfile() {
     localStorage.removeItem('currentUser');
     showSection('login');
     updateNavVisibility();
-    document.dispatchEvent(new Event('DOMContentLoaded')); // Ensures nav/admin button is updated
+    document.dispatchEvent(new Event('DOMContentLoaded')); 
 }
 
 
@@ -1719,20 +1720,20 @@ window.addEventListener('DOMContentLoaded', updateNavVisibility);
 
 
 
-// Track user activity and update lastActive timestamp
+
 function setUserActive() {
     const user = getCurrentUser();
     if (user) {
         user.lastActive = Date.now();
         setCurrentUser(user);
-        // Also update in users array
+        
         let users = getUsers();
         users = users.map(u => u.email === user.email ? { ...u, lastActive: user.lastActive } : u);
         setUsers(users);
     }
 }
 
-// Listen for activity events
+
 window.addEventListener('mousemove', setUserActive);
 window.addEventListener('keydown', setUserActive);
 window.addEventListener('click', setUserActive);
